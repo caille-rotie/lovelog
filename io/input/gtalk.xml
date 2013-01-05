@@ -1,0 +1,72 @@
+
+<con:conversation xmlns:con="google:archive:conversation">
+<cli:message to="anne.lavallard@gmail.com" iconset="classic" from="daniel.villa.monteiro@gmail.com" int:cid="332029868657528" int:sequence-no="1" int:time-stamp="1346279996904" xmlns:cli="jabber:client" xmlns:int="google:internal">
+<cli:body>Toc toc ?
+</cli:body>
+<met:google-mail-signature xmlns:met="google:metadata">KTMEID1Rw5Eb0wQaVM3t51pLjLo
+</met:google-mail-signature>
+<x stamp="20120829T22:39:56" xmlns="jabber:x:delay"/>
+<time ms="1346279996960" xmlns="google:timestamp"/>
+</cli:message>
+<cli:message to="daniel.villa.monteiro@gmail.com/gmail.5C3F6074" iconset="classic" from="anne.lavallard@gmail.com" int:cid="1764662465495257" int:sequence-no="1" int:time-stamp="1346280004290" xmlns:cli="jabber:client" xmlns:int="google:internal">
+<cli:body>Ah !
+</cli:body>
+<met:google-mail-signature xmlns:met="google:metadata">fJmPfdGeBX13atA8qtmKGcqIOl4
+</met:google-mail-signature>
+<x stamp="20120829T22:40:04" xmlns="jabber:x:delay"/>
+<time ms="1346280004312" xmlns="google:timestamp"/>
+</cli:message>
+<cli:message to="anne.lavallard@gmail.com/gmail.39043C09" iconset="classic" from="daniel.villa.monteiro@gmail.com" int:cid="332029868657528" int:sequence-no="1" int:time-stamp="1346280005942" xmlns:cli="jabber:client" xmlns:int="google:internal">
+<cli:body>Semi pro avec un avatar de chat ?
+</cli:body>
+<met:google-mail-signature xmlns:met="google:metadata">dcaRxfjUdA8C9ujokI693ipA7Es
+</met:google-mail-signature>
+<x stamp="20120829T22:40:06" xmlns="jabber:x:delay"/>
+<time ms="1346280006042" xmlns="google:timestamp"/>
+</cli:message>
+<cli:message to="daniel.villa.monteiro@gmail.com/gmail.5C3F6074" iconset="classic" from="anne.lavallard@gmail.com" int:cid="1764662465495257" int:sequence-no="2" int:time-stamp="1346280030586" xmlns:cli="jabber:client" xmlns:int="google:internal">
+<cli:body>Oui...
+</cli:body>
+<met:google-mail-signature xmlns:met="google:metadata">uA16sXI049JDGAHuALGBP6HfHw0
+</met:google-mail-signature>
+<x stamp="20120829T22:40:30" xmlns="jabber:x:delay"/>
+<time ms="1346280030607" xmlns="google:timestamp"/>
+</cli:message>
+<cli:message to="daniel.villa.monteiro@gmail.com/gmail.5C3F6074" iconset="classic" from="anne.lavallard@gmail.com" int:cid="1764662465495257" int:sequence-no="3" int:time-stamp="1346280053003" xmlns:cli="jabber:client" xmlns:int="google:internal">
+<cli:body>facebook, ya ma photo mais pas mon nom, google+, y'a mon nom et pas ma photo
+</cli:body>
+<met:google-mail-signature xmlns:met="google:metadata">k0eQB9EzGD2UZF6kLZX-9g5Cruk
+</met:google-mail-signature>
+<x stamp="20120829T22:40:53" xmlns="jabber:x:delay"/>
+<time ms="1346280053024" xmlns="google:timestamp"/>
+</cli:message>
+<cli:message to="daniel.villa.monteiro@gmail.com/gmail.5C3F6074" iconset="classic" from="anne.lavallard@gmail.com" int:cid="1764662465495257" int:sequence-no="4" int:time-stamp="1346280072027" xmlns:cli="jabber:client" xmlns:int="google:internal">
+<cli:body>Si tu veux les deux, c'est linkedin
+</cli:body>
+<met:google-mail-signature xmlns:met="google:metadata">wXVDWSC7xNCD-qI6QhgKWvMWt2o
+</met:google-mail-signature>
+<x stamp="20120829T22:41:12" xmlns="jabber:x:delay"/>
+<time ms="1346280072048" xmlns="google:timestamp"/>
+</cli:message>
+<cli:message from="daniel.villa.monteiro@gmail.com" to="anne.lavallard@gmail.com" xmlns:cli="jabber:client">
+<con:gap/>
+<x stamp="20120829T22:42:01" xmlns="jabber:x:delay"/>
+<time ms="1346280121252" xmlns="google:timestamp"/>
+</cli:message>
+<cli:message to="daniel.villa.monteiro@gmail.com/gmail.5C3F6074" iconset="classic" from="anne.lavallard@gmail.com" int:cid="1764662465495257" int:sequence-no="5" int:time-stamp="1346280191728" xmlns:cli="jabber:client" xmlns:int="google:internal">
+<cli:body>Bon, victoire !
+</cli:body>
+<met:google-mail-signature xmlns:met="google:metadata">NWvr2zTt_MAzbW8QGOcVYsIf6DA
+</met:google-mail-signature>
+<x stamp="20120829T22:43:11" xmlns="jabber:x:delay"/>
+<time ms="1346280191750" xmlns="google:timestamp"/>
+</cli:message>
+<cli:message to="daniel.villa.monteiro@gmail.com/gmail.5C3F6074" iconset="classic" from="anne.lavallard@gmail.com" int:cid="1764662465495257" int:sequence-no="6" int:time-stamp="1346280217575" xmlns:cli="jabber:client" xmlns:int="google:internal">
+<cli:body>Sur ce je vais me coucher car je vais manquer de sommeil =C3=A0 force
+</cli:body>
+<met:google-mail-signature xmlns:met="google:metadata">b8ne7Idm1vJ4_K2WILv96YisG8w
+</met:google-mail-signature>
+<x stamp="20120829T22:43:37" xmlns="jabber:x:delay"/>
+<time ms="1346280217657" xmlns="google:timestamp"/>
+</cli:message>
+</con:conversation>

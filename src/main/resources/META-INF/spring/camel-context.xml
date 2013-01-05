@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Configures the Camel Context-->
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       ">
+
+  <context:component-scan base-package="fr.rotie.caille.lovelog.camel, fr.rotie.caille.lovelog.dao, fr.rotie.caille.lovelog.model"/>
+
+  <camel:camelContext id="camel" xmlns="http://camel.apache.org/schema/spring">
+    <contextScan/>
+  </camel:camelContext>
+  
+  <bean id="empathyLogMessageDao" class="fr.rotie.caille.lovelog.model.empathy.EmpathyLogMessageDao"/>
+    
+  <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+	<property name="configLocation">
+	<value>file:src/main/resources/hibernate.cfg.xml</value>
+	</property>
+  </bean>
+
+</beans>
