@@ -3,8 +3,6 @@ package fr.rotie.caille.lovelog.db;
 import java.util.List;
 import java.util.Properties;
 
-import javax.annotation.Resource;
-
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -73,7 +71,8 @@ public class CreateDB {
             tx.commit();
              
             // Fetching saved data
-            List<LogMessage> contactList = session.createQuery("from LogMessage").list();
+            @SuppressWarnings("unchecked")
+			List<LogMessage> contactList = session.createQuery("from LogMessage").list();
              
             for (LogMessage contact : contactList) {
                 logger.info(contact);
