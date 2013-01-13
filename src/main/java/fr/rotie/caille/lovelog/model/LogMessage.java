@@ -54,8 +54,8 @@ public class LogMessage extends LogEntity {
 	public String getName() {
 		return name;
 	}
-	public void setName(String from) {
-		this.name = from;
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	

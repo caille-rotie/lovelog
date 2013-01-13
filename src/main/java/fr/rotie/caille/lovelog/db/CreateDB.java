@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -14,6 +15,7 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 import org.joda.time.Days;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 
@@ -73,16 +75,20 @@ public class CreateDB {
             	logFile.setFileName(fileName);
             	logFile.setLogHash(fileName.hashCode());
             	session.save(logFile);
+            	session.flush();
             } else {
             	logFile = logFiles.get(0);
             }
             
             // LogMessage
             EmeseneLogMessage expected =  new EmeseneLogMessage();
-    		expected.setStrTime("20120309T19:38:33");
-    		expected.setInstant(Instant.parse("20120309T19:38:33", DateTimeFormat.forPattern("yyyyMMdd'T'HH:mm:ss")));
-    		expected.setName("Chacha");
-    		expected.setText("Toc toc ?");
+    		String dateTime = "20120309T19:38:33";
+    		String name = "Chacha";
+    		String text = "Toc toc ?";
+			expected.setStrTime(dateTime);
+    		expected.setInstant(Instant.parse(dateTime, DateTimeFormat.forPattern("yyyyMMdd'T'HH:mm:ss")));
+			expected.setName(name);
+			expected.setText(text.trim());
     		
     		// LogDay
     		LogDay day;
@@ -96,20 +102,28 @@ public class CreateDB {
 	    		day = days.get(0);
 	    	}
     		expected.setLogDay(day);
-
-    		logger.info("Message : "+expected);
-    		logger.info("jours : "+expected.getLogDay());
-    		logger.info("Fichier : "+expected.getLogDay().getLogFiles());
-            // Saving to the database
-            session.save(expected);
-            session.flush();
     		
     		logFile.getLogDays().add(day);
     		session.update(logFile);
+                		
+    		// Recherche d'un éventuel doublon de message.
+    		List<LogMessage> search =  session
+    				.createQuery("From LogMessage WHERE name=:name AND text LIKE :text AND instant between :time1 AND :time2")
+    				.setString("name", name)
+    				.setString("text", text)
+    				.setParameter("time1", expected.getInstant().minus(Duration.millis(1000*60*5)))
+    				.setParameter("time2", expected.getInstant().plus(Duration.millis(1000*60*5)))
+    				.list();
+    		if (search.size() == 0) {    		
+    			session.save(expected);
+    		}
              
             // Committing the change in the database.
-            session.flush();
             tx.commit();
+
+    		logger.info("Message : "+expected);
+    		logger.info("jours : "+expected.getLogDay());
+    		logger.info("Fichier : "+expected.getLogDay().getLogFiles()); // TODO : voir pourquoi au premier enregistrement, on voit pas les fichiers...
              
             // Fetching saved data
             List<LogMessage> contactList = session.createQuery("from LogMessage").list();
