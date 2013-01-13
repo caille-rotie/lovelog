@@ -1,7 +1,9 @@
 package fr.rotie.caille.lovelog.db;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -11,9 +13,12 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
+import org.joda.time.Days;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 
+import fr.rotie.caille.lovelog.model.LogDay;
+import fr.rotie.caille.lovelog.model.LogFile;
 import fr.rotie.caille.lovelog.model.LogMessage;
 import fr.rotie.caille.lovelog.model.emesene.EmeseneLogMessage;
 
@@ -43,6 +48,7 @@ public class CreateDB {
 //		CreateDB.sessionFactory = sessionFactory;
 //	}
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
         // Configure the session factory
         configureSessionFactory();
@@ -53,26 +59,60 @@ public class CreateDB {
         try {
             session = sessionFactory.openSession();
             tx = session.beginTransaction();
-             
-            // Creating Contact entity that will be save to the sqlite database
+            
+            // Creating Contact entity that will be save to the database
+            // LogFile
+            LogFile logFile;
+            String fileName = "/lovelog/src/test/resources/20120309.log";
+            List<LogFile> logFiles = session
+            		.createQuery("From LogFile where fileName=:fileName")
+            		.setString("fileName", fileName)
+            		.list();
+            if (logFiles.size() == 0) {
+            	logFile = new LogFile();
+            	logFile.setFileName(fileName);
+            	logFile.setLogHash(fileName.hashCode());
+            	session.save(logFile);
+            } else {
+            	logFile = logFiles.get(0);
+            }
+            
+            // LogMessage
             EmeseneLogMessage expected =  new EmeseneLogMessage();
     		expected.setStrTime("20120309T19:38:33");
     		expected.setInstant(Instant.parse("20120309T19:38:33", DateTimeFormat.forPattern("yyyyMMdd'T'HH:mm:ss")));
     		expected.setName("Chacha");
     		expected.setText("Toc toc ?");
-    		logger.info(expected);
     		
-             
+    		// LogDay
+    		LogDay day;
+    		Instant referenceInstant = Instant.parse("2000-01-01T05", DateTimeFormat.forPattern("yyyy-MM-dd'T'HH"));
+    		Long idDate = new Long (Days.daysBetween(referenceInstant,expected.getInstant()).getDays());
+    		List<LogDay> days = (List<LogDay>) session.createQuery("From LogDay where idDate=:idDate").setLong("idDate", idDate).list();
+    		if (days.size() == 0) {
+	    		day = new LogDay();
+				day.setIdDate(idDate);
+	    	} else {
+	    		day = days.get(0);
+	    	}
+    		expected.setLogDay(day);
+
+    		logger.info("Message : "+expected);
+    		logger.info("jours : "+expected.getLogDay());
+    		logger.info("Fichier : "+expected.getLogDay().getLogFiles());
             // Saving to the database
             session.save(expected);
+            session.flush();
+    		
+    		logFile.getLogDays().add(day);
+    		session.update(logFile);
              
             // Committing the change in the database.
             session.flush();
             tx.commit();
              
             // Fetching saved data
-            @SuppressWarnings("unchecked")
-			List<LogMessage> contactList = session.createQuery("from LogMessage").list();
+            List<LogMessage> contactList = session.createQuery("from LogMessage").list();
              
             for (LogMessage contact : contactList) {
                 logger.info(contact);

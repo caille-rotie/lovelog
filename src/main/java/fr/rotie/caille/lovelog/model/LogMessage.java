@@ -1,17 +1,6 @@
 package fr.rotie.caille.lovelog.model;
 
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
+import javax.persistence.*;
 import org.hibernate.annotations.Type;
 import org.joda.time.Instant;
 
@@ -25,24 +14,28 @@ import org.joda.time.Instant;
 	)
 	@DiscriminatorValue("LogMessage")
 @Table(name = "LogMessage")
-public class LogMessage {
+public class LogMessage extends LogEntity {
 
-    private Integer id;
-	private String strTime;
-	private Instant instant;
-	private String name;
-	private String text;
-	
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	public Integer getId() {
-		return id;
-	}
-	public void setId(Integer id) {
-		this.id = id;
-	}
+	private Integer id;
+	
+    @Type(type="org.jadira.usertype.dateandtime.joda.PersistentInstantAsTimestamp")
+	private Instant instant;
+	
+    private String name;
+	
+    @Type(type="text")
+    private String text;
+    
+    @ManyToOne(cascade=javax.persistence.CascadeType.ALL)
+    @JoinColumn(name="idLogDay", nullable=false)
+    private LogDay logDay;
+    
+    @Transient
+	private String strTime;
 
-	@Transient
+	
 	public String getStrTime() {
 		return strTime;
 	}
@@ -50,7 +43,7 @@ public class LogMessage {
 		this.strTime = dateTime;
 	}
 
-	@Type(type="org.jadira.usertype.dateandtime.joda.PersistentInstantAsTimestamp")
+	
 //	@Transient
 	public Instant getInstant() {
 		return instant;
@@ -65,7 +58,7 @@ public class LogMessage {
 		this.name = from;
 	}
 	
-	@Type(type="text")
+	
 //	@Transient
 	public String getText() {
 		return text;
@@ -73,10 +66,22 @@ public class LogMessage {
 	public void setText(String text) {
 		this.text = text;
 	}
+	public LogDay getLogDay() {
+		return logDay;
+	}
+	public void setLogDay(LogDay logDay) {
+		this.logDay = logDay;
+	}
 	
+//	@Override
+//	public String toString() {
+//		return "logMessage [id="+getId() +", instant=" + getInstant() + ", from=" + getName()  + ", text=" + getText() + "]";
+//	}
+
 	@Override
 	public String toString() {
-		return "logMessage [id="+getId() +", instant=" + getInstant() + ", from=" + getName()  + ", text=" + getText() + "]";
+		return "LogMessage [id="+getId() +", instant=" + getInstant() + ", name="
+				+ getName() + ", text=" + getText() + ", logDay=" + logDay.getId() + "]";
 	}
 	
 	@Override

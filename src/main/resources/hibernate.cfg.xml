@@ -17,5 +17,7 @@
         <mapping class="fr.rotie.caille.lovelog.model.LogMessage"/>
         <mapping class="fr.rotie.caille.lovelog.model.emesene.EmeseneLogMessage"/>
         <mapping class="fr.rotie.caille.lovelog.model.empathy.EmpathyLogMessage"/>
+        <mapping class="fr.rotie.caille.lovelog.model.LogDay"/>
+        <mapping class="fr.rotie.caille.lovelog.model.LogFile"/>
     </session-factory>
 </hibernate-configuration>
