@@ -1,11 +1,13 @@
 package fr.rotie.caille.lovelog.dao;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.camel.component.file.GenericFile;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Repository;
 
 import fr.rotie.caille.lovelog.model.LogDay;
 import fr.rotie.caille.lovelog.model.LogEntity;
+import fr.rotie.caille.lovelog.model.LogFile;
 import fr.rotie.caille.lovelog.model.LogMessage;
 
 @Repository(value="logMessageDao")
@@ -39,6 +42,33 @@ public class LogMessageDaoImpl  implements LogMessageDao {
 	public <T extends LogMessage> T create(T newInstance) {
 		save(newInstance);
 		return newInstance;
+	}
+	
+	@Override
+	public LogFile getLogfile(GenericFile<File> fileMessage) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+        LogFile logFile;
+        String fileName = fileMessage.getFileName();
+        int logHash = fileMessage.getBody().hashCode();
+        @SuppressWarnings("unchecked")
+		List<LogFile> logFiles = session
+        		.createQuery("From LogFile where fileName=:fileName and logHash=:logHash ")
+        		.setString("fileName", fileName)
+        		.setInteger("logHash", logHash)
+        		.list();
+        if (logFiles.size() == 0) {
+        	logFile = new LogFile();
+        	logFile.setFileName(fileName);
+			logFile.setLogHash(logHash);
+        	session.save(logFile);
+        	session.flush();
+        } else {
+        	logFile = logFiles.get(0);
+        }
+        session.flush();
+        tx.commit();
+        return logFile;
 	}
 
 	private <T extends LogEntity> T save(T newInstance) {
@@ -85,7 +115,11 @@ public class LogMessageDaoImpl  implements LogMessageDao {
 		return "p"+param.hashCode();
 	}
 	
+	@Override
 	public LogDay attachLogDay(LogMessage m) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = session.beginTransaction();
+		
 		// calcul du nombre de jours depuis la date de référence
 		Long idDate = new Long (Days.daysBetween(referenceInstant,m.getInstant()).getDays());
 		
@@ -102,7 +136,6 @@ public class LogMessageDaoImpl  implements LogMessageDao {
 			messages.add(m);
 			day.setLogMessages(messages );
 			save(day);
-			return day;
 		}
 		
 		// Mise à jour du jour
@@ -112,8 +145,12 @@ public class LogMessageDaoImpl  implements LogMessageDao {
 			messages.add(m);
 			day.setLogMessages(messages);
 			update(day);
-			return day;
 		}
+		
+		m.getLogfile().getLogDays().add(day);
+        session.flush();
+        tx.commit();
+		return day;
 	}
 	
 	

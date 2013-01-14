@@ -34,8 +34,11 @@ public class LogMessage extends LogEntity {
     
     @Transient
 	private String strTime;
-
-	
+    
+    @Transient
+    private LogFile logfile;
+    
+    
 	public String getStrTime() {
 		return strTime;
 	}
@@ -71,6 +74,12 @@ public class LogMessage extends LogEntity {
 	}
 	public void setLogDay(LogDay logDay) {
 		this.logDay = logDay;
+	}
+	public LogFile getLogfile() {
+		return logfile;
+	}
+	public void setLogfile(LogFile logfile) {
+		this.logfile = logfile;
 	}
 	
 //	@Override

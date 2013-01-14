@@ -14,7 +14,9 @@ public class LoveRoute extends SpringRouteBuilder{
         castor.setMappingFile("castor-mapping.xml");
     	
         from("file://io/input?noop=true")
-            .log("file ${file:name}")
+            .log("file : ${file:name}")
+            .setHeader("logFile", method("logMessageDao","getLogfile"))
+            .log("header : ${headers.logFile}")
             .doTry()
             	.to("validator:empathy.xsd")
             	.to("direct:empathy")
