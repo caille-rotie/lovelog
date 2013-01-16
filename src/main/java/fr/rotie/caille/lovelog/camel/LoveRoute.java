@@ -4,6 +4,8 @@ import org.apache.camel.dataformat.castor.CastorDataFormat;
 import org.apache.camel.spring.SpringRouteBuilder;
 import org.springframework.stereotype.Component;
 
+import fr.rotie.caille.lovelog.model.emesene.EmeseneLogMessageDataFormat;
+
 @Component
 public class LoveRoute extends SpringRouteBuilder{
 
@@ -30,7 +32,6 @@ public class LoveRoute extends SpringRouteBuilder{
         	.split().tokenizeXML("message")
         	.log("ligne: ${body}")
             .unmarshal(castor)
-            .log("header : ${headers.logFile}")
             .beanRef("empathyLogMessageDao", "parseInstant")
             .beanRef("logMessageDao", "attachLogFile(${body}, ${headers.logFile})")
             .beanRef("logMessageDao", "createLogMessage")
@@ -40,9 +41,11 @@ public class LoveRoute extends SpringRouteBuilder{
         
         from("direct:emesene")
     		.log("type : emesene")
-//        	.split(body().tokenize("\n\\["))
-//            .unmarshal(new EmeseneLogMessageDataFormat())
-//            .log("ligne: ${body}")
+        	.split(body().tokenize("\n\\["))
+            .unmarshal(new EmeseneLogMessageDataFormat())
+            .beanRef("logMessageDao", "attachLogFile(${body}, ${headers.logFile})")
+            .beanRef("logMessageDao", "createLogMessage")
+            .log("ligne: ${body}")
     		//                .to("jpa:fr.rotie.caille.lovelog.model.LogMessage")
             .end();
 
