@@ -14,6 +14,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.joda.time.Days;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.stereotype.Repository;
@@ -27,55 +28,29 @@ import fr.rotie.caille.lovelog.model.LogMessage;
 @Repository(value="logMessageDao")
 public class LogMessageDaoImpl  implements LogMessageDao {
 
+	/***************************************************************************
+	 * Méthodes de DAO (privées
+	 ***************************************************************************/
+
 	@SuppressWarnings("unused")
 	private final Logger log = Logger.getLogger(this.getClass());
     private final Instant referenceInstant = Instant.parse("2000-01-01T05", DateTimeFormat.forPattern("yyyy-MM-dd'T'HH"));
-    static String AND = " AND ";
-    static String WHERE = " WHERE ";
+    private static final String AND = " AND ";
+    private static final String WHERE = " WHERE ";
+    /**
+     * Précision sur la date lors de la recherche des doublons de messages
+     */
+	private static final int DOUBLON_TIME = 1000*60*5;
 	
 	@Resource
-    public void setSessionFactory(SessionFactory sessionFactory) {
+	private void setSessionFactory(SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
-    protected SessionFactory sessionFactory;
+	private SessionFactory sessionFactory;
     
     public Session getSession() {
     	return sessionFactory.getCurrentSession();
     }
-    
-	@Override
-	public <T extends LogMessage> T createLogMessage(T newInstance) {
-		save(newInstance);
-		return newInstance;
-	}
-	
-	@Override
-	@Transactional
-	public LogFile getLogfile(GenericFile<File> fileMessage) {
-//		Session session = sessionFactory.openSession();
-//		Transaction tx = session.beginTransaction();
-        LogFile logFile;
-        String fileName = fileMessage.getFileName();
-        int logHash = fileMessage.getBody().hashCode();
-        @SuppressWarnings("unchecked")
-		List<LogFile> logFiles = getSession()
-        		.createQuery("From LogFile where fileName=:fileName and logHash=:logHash ")
-        		.setString("fileName", fileName)
-        		.setInteger("logHash", logHash)
-        		.list();
-        if (logFiles.size() == 0) {
-        	logFile = new LogFile();
-        	logFile.setFileName(fileName);
-			logFile.setLogHash(logHash);
-			getSession().save(logFile);
-			getSession().flush();
-        } else {
-        	logFile = logFiles.get(0);
-        }
-//        session.flush();
-//        tx.commit();
-        return logFile;
-	}
 
 	private <T extends LogEntity> T save(T newInstance) {
 		Session session = sessionFactory.openSession();
@@ -121,8 +96,28 @@ public class LogMessageDaoImpl  implements LogMessageDao {
 		return "p"+param.hashCode();
 	}
 	
-	@Override
-	public LogDay attachLogDay(LogMessage m) {
+	private <T extends LogMessage> LogFile getLogFile (T logMessage){
+		LogFile logfile = logMessage.getLogfile();
+		log.info("getLogFile ; logFile : "+ logfile);
+		log.info("getLogFile ; logFile : "+ logfile.getId());
+		return (LogFile) getSession().get(LogFile.class, logfile.getId());
+	}
+	
+	private <T extends LogMessage> LogDay getDay(T logMessage) {
+		LogDay day;
+		Long idDate = new Long (Days.daysBetween(referenceInstant,logMessage.getInstant()).getDays());
+		@SuppressWarnings("unchecked")
+		List<LogDay> days = (List<LogDay>) getSession().createQuery("From LogDay where idDate=:idDate").setLong("idDate", idDate).list();
+		if (days.size() == 0) {
+    		day = new LogDay();
+			day.setIdDate(idDate);
+    	} else {
+    		day = days.get(0);
+    	}
+		return day;
+	}
+	
+	private LogDay attachLogDay(LogMessage m) {
 		Session session = sessionFactory.openSession();
 		Transaction tx = session.beginTransaction();
 		
@@ -157,6 +152,80 @@ public class LogMessageDaoImpl  implements LogMessageDao {
         session.flush();
         tx.commit();
 		return day;
+	}
+
+	/**
+	 * Recherche un doubon à logMessage dans la base, à quelques minutes près.
+	 * @param logMessage
+	 * @return
+	 */
+	private <T extends LogMessage> boolean exist(T logMessage) {
+		@SuppressWarnings("unchecked")
+		List<LogMessage> search =  getSession()
+				.createQuery("From LogMessage WHERE name=:name AND text LIKE :text AND instant between :time1 AND :time2")
+				.setString("name", logMessage.getName())
+				.setString("text", logMessage.getText())
+				.setParameter("time1", logMessage.getInstant().minus(Duration.millis(DOUBLON_TIME)))
+				.setParameter("time2", logMessage.getInstant().plus(Duration.millis(DOUBLON_TIME)))
+				.list();
+		if (search.size() == 0) {    		
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	/***************************************************************************
+	 * Méthodes de services (appellées dans les routes et transactionnelles
+	 ***************************************************************************/
+	
+	
+	@Override
+	@Transactional
+	public LogFile getLogfile(GenericFile<File> fileMessage) {
+        LogFile logFile;
+        String fileName = fileMessage.getFileName();
+        int logHash = fileMessage.getBody().hashCode();
+        @SuppressWarnings("unchecked")
+		List<LogFile> logFiles = getSession()
+        		.createQuery("From LogFile where fileName=:fileName and logHash=:logHash ")
+        		.setString("fileName", fileName)
+        		.setInteger("logHash", logHash)
+        		.list();
+        if (logFiles.size() == 0) {
+        	logFile = new LogFile();
+        	logFile.setFileName(fileName);
+			logFile.setLogHash(logHash);
+			getSession().save(logFile);
+			getSession().flush();
+        } else {
+        	logFile = logFiles.get(0);
+        }
+        return logFile;
+	}
+	
+	@Override
+	@Transactional
+	public <T extends LogMessage> T attachLogFile(T logMessage, LogFile logFile) {
+		logMessage.setLogfile(logFile);
+		return logMessage;
+	}
+    
+	@Override
+	@Transactional
+	public <T extends LogMessage> T createLogMessage(T logMessage) {
+		LogDay day = getDay(logMessage);
+		logMessage.setLogDay(day);
+		
+		LogFile logFile = getLogFile(logMessage);
+		logFile.getLogDays().add(day);
+		getSession().update(logFile);
+
+		// Recherche d'un éventuel doublon de message.
+		if (!exist(logMessage)) {
+			getSession().save(logMessage);
+		}
+		return logMessage;
 	}
 	
 	

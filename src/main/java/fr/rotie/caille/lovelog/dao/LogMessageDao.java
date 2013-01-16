@@ -12,6 +12,6 @@ public interface LogMessageDao {
 
 	LogFile getLogfile(GenericFile<File> fileMessage);
 	<T extends LogMessage> T createLogMessage(T newInstance);
-	LogDay attachLogDay(LogMessage m);
+	<T extends LogMessage> T attachLogFile(T logMessage, LogFile logFile);
 
 }

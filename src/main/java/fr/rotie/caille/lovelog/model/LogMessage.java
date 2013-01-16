@@ -89,8 +89,10 @@ public class LogMessage extends LogEntity {
 
 	@Override
 	public String toString() {
+//		return "LogMessage [id="+getId() +", instant=" + getInstant() + ", name="
+//				+ getName() + ", text=" + getText() + ", logDay=" + logDay.getId() + "]";
 		return "LogMessage [id="+getId() +", instant=" + getInstant() + ", name="
-				+ getName() + ", text=" + getText() + ", logDay=" + logDay.getId() + "]";
+		+ getName() + ", text=" + getText() + "]";
 	}
 	
 	@Override
