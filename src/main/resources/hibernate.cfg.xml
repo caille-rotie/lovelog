@@ -7,10 +7,6 @@
         <property name="show_sql">true</property>
         <property name="format_sql">true</property>
         <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
-        <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="connection.url">jdbc:mysql://localhost:3306/journal</property>
-        <property name="connection.username">root</property>
-        <property name="connection.password">arcancia</property>
          
         <property name="hibernate.hbm2ddl.auto">update</property>
          

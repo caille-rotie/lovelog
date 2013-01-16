@@ -11,7 +11,7 @@ import fr.rotie.caille.lovelog.model.LogMessage;
 public interface LogMessageDao {
 
 	LogFile getLogfile(GenericFile<File> fileMessage);
-	<T extends LogMessage> T create(T newInstance);
+	<T extends LogMessage> T createLogMessage(T newInstance);
 	LogDay attachLogDay(LogMessage m);
 
 }

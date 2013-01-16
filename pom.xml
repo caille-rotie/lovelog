@@ -26,6 +26,13 @@
             <artifactId>hibernate-core</artifactId>
             <version>4.1.4.Final</version>
         </dependency>
+
+		<!-- DefaultAopProxy -->
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib</artifactId>
+			<version>2.2.2</version>
+		</dependency>
         
         
         <dependency>

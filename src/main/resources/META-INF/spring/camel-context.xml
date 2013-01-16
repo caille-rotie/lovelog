@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Configures the Camel Context-->
 
+
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:camel="http://camel.apache.org/schema/spring"
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
        ">
@@ -18,11 +21,26 @@
   </camel:camelContext>
   
   <bean id="empathyLogMessageDao" class="fr.rotie.caille.lovelog.model.empathy.EmpathyLogMessageDao"/>
+  
+      <bean id="loveLogDS" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/journal"/>
+        <property name="username" value="root"/>
+        <property name="password" value="arcancia"/>
+    </bean>
     
   <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <property name="dataSource" ref="loveLogDS"/>
 	<property name="configLocation">
 	<value>file:src/main/resources/hibernate.cfg.xml</value>
 	</property>
   </bean>
+    
+    <!-- Hibernate Transaction Manager Definition -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+	    <property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true"/>
 
 </beans>

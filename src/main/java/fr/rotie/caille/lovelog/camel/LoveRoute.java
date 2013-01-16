@@ -31,7 +31,7 @@ public class LoveRoute extends SpringRouteBuilder{
         	.log("ligne: ${body}")
             .unmarshal(castor)
             .beanRef("empathyLogMessageDao", "parseInstant")
-            .beanRef("logMessageDao", "create")
+            .beanRef("logMessageDao", "createLogMessage")
         	.log("ligne: ${body}")
 //        	.to("jpa:fr.rotie.caille.lovelog.model.LogMessage")
         	.end();

@@ -17,6 +17,7 @@ import org.joda.time.Days;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import fr.rotie.caille.lovelog.model.LogDay;
 import fr.rotie.caille.lovelog.model.LogEntity;
@@ -38,21 +39,26 @@ public class LogMessageDaoImpl  implements LogMessageDao {
     }
     protected SessionFactory sessionFactory;
     
+    public Session getSession() {
+    	return sessionFactory.getCurrentSession();
+    }
+    
 	@Override
-	public <T extends LogMessage> T create(T newInstance) {
+	public <T extends LogMessage> T createLogMessage(T newInstance) {
 		save(newInstance);
 		return newInstance;
 	}
 	
 	@Override
+	@Transactional
 	public LogFile getLogfile(GenericFile<File> fileMessage) {
-		Session session = sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
+//		Session session = sessionFactory.openSession();
+//		Transaction tx = session.beginTransaction();
         LogFile logFile;
         String fileName = fileMessage.getFileName();
         int logHash = fileMessage.getBody().hashCode();
         @SuppressWarnings("unchecked")
-		List<LogFile> logFiles = session
+		List<LogFile> logFiles = getSession()
         		.createQuery("From LogFile where fileName=:fileName and logHash=:logHash ")
         		.setString("fileName", fileName)
         		.setInteger("logHash", logHash)
@@ -61,13 +67,13 @@ public class LogMessageDaoImpl  implements LogMessageDao {
         	logFile = new LogFile();
         	logFile.setFileName(fileName);
 			logFile.setLogHash(logHash);
-        	session.save(logFile);
-        	session.flush();
+			getSession().save(logFile);
+			getSession().flush();
         } else {
         	logFile = logFiles.get(0);
         }
-        session.flush();
-        tx.commit();
+//        session.flush();
+//        tx.commit();
         return logFile;
 	}
 
