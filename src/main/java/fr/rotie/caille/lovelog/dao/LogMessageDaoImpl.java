@@ -52,39 +52,29 @@ public class LogMessageDaoImpl  implements LogMessageDao {
     }
 
 	private <T extends LogEntity> T save(T newInstance) {
-		Session session = sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
-		Long id = (Long) session.save(newInstance);
+		Long id = (Long) getSession().save(newInstance);
 		newInstance.setId(id);
-        session.flush();
-        tx.commit();
 		return newInstance;
 	}
 
 	private <T extends LogEntity> void update(T instance) {
-		Session session = sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
-		session.update(instance);
-        session.flush();
-        tx.commit();
+    	getSession().update(instance);
 	}
 
 	@SuppressWarnings({ "unused", "rawtypes" })
 	private <T extends LogEntity> LogEntity get(Class clazz, Long id) {
-		Session session = sessionFactory.openSession();
-		return (LogEntity) session.get(clazz, id);
+		return (LogEntity) getSession().get(clazz, id);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private <T extends LogEntity> List<T> getList(Class clazz, HashMap<String, Object> params) {
-		Session session = sessionFactory.openSession();
 		String queryString = "FROM "+clazz.getName();
 		String and = WHERE;
 		for (String param : params.keySet()) {
 			queryString += and+param+"=:"+getParamName(param);
 			and = AND;
 		}
-		Query q = session.createQuery(queryString);
+		Query q = getSession().createQuery(queryString);
 		for (String param : params.keySet()) {
 			q.setParameter(getParamName(param), params.get(param));
 		}
@@ -102,15 +92,24 @@ public class LogMessageDaoImpl  implements LogMessageDao {
 		return (LogFile) getSession().get(LogFile.class, logfile.getId());
 	}
 	
-	@SuppressWarnings("unchecked")
 	private <T extends LogMessage> FileDay getDay(T logMessage) {
 		FileDay day;
 		Integer idDate = Days.daysBetween(referenceInstant,logMessage.getInstant()).getDays();
-		day = new FileDay();
-		day.setIdDay(idDate);
-		day.setFile(logMessage.getLogfile());
-		logMessage.getLogfile().getFileDays().add(day);
-		getSession().update(logMessage.getLogfile());
+		LogFile logfile = getLogFile(logMessage);
+		
+		@SuppressWarnings("unchecked")
+		List<FileDay> days = (List<FileDay>) getSession().createQuery("From FileDay where idDay=:idDate and file=:file")
+			.setLong("idDate", idDate).setParameter("file", logfile).list();
+		if (days.size() == 0) {
+			day = new FileDay();
+			day.setIdDay(idDate);
+			day.setFile(logfile);
+			getSession().save(day);
+    	} else {
+    		day = days.get(0);
+    	}		
+		logfile.getFileDays().add(day);
+		getSession().update(logfile);
 		return day;
 	}
 	
