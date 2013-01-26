@@ -4,7 +4,6 @@ import java.io.File;
 
 import org.apache.camel.component.file.GenericFile;
 
-import fr.rotie.caille.lovelog.model.LogDay;
 import fr.rotie.caille.lovelog.model.LogFile;
 import fr.rotie.caille.lovelog.model.LogMessage;
 

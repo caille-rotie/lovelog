@@ -1,7 +1,6 @@
 package fr.rotie.caille.lovelog.dao;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,7 +19,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import fr.rotie.caille.lovelog.model.LogDay;
+import fr.rotie.caille.lovelog.model.FileDay;
 import fr.rotie.caille.lovelog.model.LogEntity;
 import fr.rotie.caille.lovelog.model.LogFile;
 import fr.rotie.caille.lovelog.model.LogMessage;
@@ -103,56 +102,54 @@ public class LogMessageDaoImpl  implements LogMessageDao {
 		return (LogFile) getSession().get(LogFile.class, logfile.getId());
 	}
 	
-	private <T extends LogMessage> LogDay getDay(T logMessage) {
-		LogDay day;
-		Long idDate = new Long (Days.daysBetween(referenceInstant,logMessage.getInstant()).getDays());
-		@SuppressWarnings("unchecked")
-		List<LogDay> days = (List<LogDay>) getSession().createQuery("From LogDay where idDate=:idDate").setLong("idDate", idDate).list();
-		if (days.size() == 0) {
-    		day = new LogDay();
-			day.setIdDate(idDate);
-    	} else {
-    		day = days.get(0);
-    	}
+	@SuppressWarnings("unchecked")
+	private <T extends LogMessage> FileDay getDay(T logMessage) {
+		FileDay day;
+		Integer idDate = Days.daysBetween(referenceInstant,logMessage.getInstant()).getDays();
+		day = new FileDay();
+		day.setIdDay(idDate);
+		day.setFile(logMessage.getLogfile());
+		logMessage.getLogfile().getFileDays().add(day);
+		getSession().update(logMessage.getLogfile());
 		return day;
 	}
 	
-	private LogDay attachLogDay(LogMessage m) {
-		Session session = sessionFactory.openSession();
-		Transaction tx = session.beginTransaction();
-		
-		// calcul du nombre de jours depuis la date de référence
-		Long idDate = new Long (Days.daysBetween(referenceInstant,m.getInstant()).getDays());
-		
-		HashMap<String, Object> params = new HashMap<String, Object>();
-		params.put("idDate", idDate);
-		List<LogDay> list = getList(LogDay.class, params);
-		LogDay day;
-		
-		// Création du jour
-		if (list.size() == 0) {
-			day = new LogDay();
-			day.setIdDate(idDate);
-			List<LogMessage> messages = new ArrayList<LogMessage>();
-			messages.add(m);
-			day.setLogMessages(messages );
-			save(day);
-		}
-		
-		// Mise à jour du jour
-		else {
-			day = list.get(0);
-			List<LogMessage> messages = day.getLogMessages();
-			messages.add(m);
-			day.setLogMessages(messages);
-			update(day);
-		}
-		
-		m.getLogfile().getLogDays().add(day);
-        session.flush();
-        tx.commit();
-		return day;
-	}
+//	private LogDay attachLogDay(LogMessage m) {
+//		Session session = sessionFactory.openSession();
+//		Transaction tx = session.beginTransaction();
+//		
+//		// calcul du nombre de jours depuis la date de référence
+//		Long idDate = new Long (Days.daysBetween(referenceInstant,m.getInstant()).getDays());
+//		
+//		HashMap<String, Object> params = new HashMap<String, Object>();
+//		params.put("idDate", idDate);
+//		List<LogDay> list = getList(LogDay.class, params);
+//		LogDay day;
+//		
+//		// Création du jour
+//		if (list.size() == 0) {
+//			day = new LogDay();
+//			day.setIdDate(idDate);
+//			List<LogMessage> messages = new ArrayList<LogMessage>();
+//			messages.add(m);
+//			day.setLogMessages(messages );
+//			save(day);
+//		}
+//		
+//		// Mise à jour du jour
+//		else {
+//			day = list.get(0);
+//			List<LogMessage> messages = day.getLogMessages();
+//			messages.add(m);
+//			day.setLogMessages(messages);
+//			update(day);
+//		}
+//		
+//		m.getLogfile().getIdDays().add(day);
+//        session.flush();
+//        tx.commit();
+//		return day;
+//	}
 
 	/**
 	 * Recherche un doubon à logMessage dans la base, à quelques minutes près.
@@ -214,12 +211,12 @@ public class LogMessageDaoImpl  implements LogMessageDao {
 	@Override
 	@Transactional
 	public <T extends LogMessage> T createLogMessage(T logMessage) {
-		LogDay day = getDay(logMessage);
-		logMessage.setLogDay(day);
+		FileDay day = getDay(logMessage);
+		logMessage.setIdDay(day.getIdDay());
 		
-		LogFile logFile = getLogFile(logMessage);
-		logFile.getLogDays().add(day);
-		getSession().update(logFile);
+//		LogFile logFile = getLogFile(logMessage);
+//		logFile.getFileDays().add(idDay);
+//		getSession().update(logFile);
 
 		// Recherche d'un éventuel doublon de message.
 		if (!exist(logMessage)) {

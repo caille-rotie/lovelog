@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<?xml-stylesheet type="text/xsl" href="log-store-xml.xsl"?>
+<log>
+<message time='20120309T19:38:33' id='jadechieuse@hotmail.com' name='Chacha' token='73ab9fedcc72dc13f5d5c6d32b1518defc1fd311' isuser='false' type='normal'>Toc toc ?</message>
+<message time='20120309T19:40:52' id='jadechieuse@hotmail.com' name='Chacha' token='73ab9fedcc72dc13f5d5c6d32b1518defc1fd311' isuser='false' type='normal'>Ché ki ?</message>
+</log>

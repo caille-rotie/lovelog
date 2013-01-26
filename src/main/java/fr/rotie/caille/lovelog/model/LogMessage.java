@@ -28,9 +28,8 @@ public class LogMessage extends LogEntity {
     @Type(type="text")
     private String text;
     
-    @ManyToOne(cascade=javax.persistence.CascadeType.ALL)
-    @JoinColumn(name="idLogDay", nullable=false)
-    private LogDay logDay;
+    @Column(nullable=false)
+    private Integer idDay;
     
     @Transient
 	private String strTime;
@@ -69,11 +68,11 @@ public class LogMessage extends LogEntity {
 	public void setText(String text) {
 		this.text = text;
 	}
-	public LogDay getLogDay() {
-		return logDay;
+	public Integer getIdDay() {
+		return idDay;
 	}
-	public void setLogDay(LogDay logDay) {
-		this.logDay = logDay;
+	public void setIdDay(Integer idDay) {
+		this.idDay = idDay;
 	}
 	public LogFile getLogfile() {
 		return logfile;
