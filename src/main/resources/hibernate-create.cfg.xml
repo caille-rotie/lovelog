@@ -4,8 +4,6 @@
  
 <hibernate-configuration>
     <session-factory>
-        <property name="show_sql">true</property>
-        <property name="format_sql">true</property>
         <property name="dialect">org.hibernate.dialect.MySQLDialect</property>
          
         <property name="hibernate.hbm2ddl.auto">create</property>

@@ -1,0 +1,3 @@
+<?xml version="1.0" ?>
+<locatingRules xmlns="http://thaiopensource.com/ns/locating-rules/1.0">
+<uri resource="file:/home/anne/workspace/lovelog/io/input/gtalk.xml" uri="file:/home/anne/workspace/lovelog/src/main/resources/jabber-client.xsd"/><include rules="file:/home/anne/.jedit/plugins/xml.XmlPlugin/schemas.xml" /><include rules="jeditresource:/XML.jar!/xml/dtds/schemas.xml" /></locatingRules>
