@@ -36,7 +36,7 @@ public class LoveRoute extends SpringRouteBuilder{
 	        .end();
         
         from("direct:other")
-			.log("type : non-parsé")
+			.log("type : non-parsé\n\n")
 	    	.end();
         
         from("direct:empathy")
@@ -47,7 +47,7 @@ public class LoveRoute extends SpringRouteBuilder{
             .beanRef("empathyLogMessageDao", "parseInstant")
             .beanRef("logMessageDao", "attachLogFile(${body}, ${headers.logFile})")
             .beanRef("logMessageDao", "createLogMessage")
-        	.log("ligne: ${body}")
+        	.log("ligne: ${body}\n\n")
 //        	.to("jpa:fr.rotie.caille.lovelog.model.LogMessage")
         	.end();
         
@@ -57,7 +57,7 @@ public class LoveRoute extends SpringRouteBuilder{
             .unmarshal(new EmeseneLogMessageDataFormat())
             .beanRef("logMessageDao", "attachLogFile(${body}, ${headers.logFile})")
             .beanRef("logMessageDao", "createLogMessage")
-            .log("ligne: ${body}")
+            .log("ligne: ${body}\n\n")
     		//                .to("jpa:fr.rotie.caille.lovelog.model.LogMessage")
             .end();
         
@@ -69,7 +69,7 @@ public class LoveRoute extends SpringRouteBuilder{
 //            .beanRef("empathyLogMessageDao", "parseInstant")
 //            .beanRef("logMessageDao", "attachLogFile(${body}, ${headers.logFile})")
 //            .beanRef("logMessageDao", "createLogMessage")
-        	.log("ligne: ${body}")
+        	.log("ligne: ${body}\n\n")
         	.end();
 
     	

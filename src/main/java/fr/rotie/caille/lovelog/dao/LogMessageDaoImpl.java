@@ -87,8 +87,7 @@ public class LogMessageDaoImpl  implements LogMessageDao {
 	
 	private <T extends LogMessage> LogFile getLogFile (T logMessage){
 		LogFile logfile = logMessage.getLogfile();
-		log.info("getLogFile ; logFile : "+ logfile);
-		log.info("getLogFile ; logFile : "+ logfile.getId());
+		log.info("getLogFile : "+ logfile);
 		return (LogFile) getSession().get(LogFile.class, logfile.getId());
 	}
 	

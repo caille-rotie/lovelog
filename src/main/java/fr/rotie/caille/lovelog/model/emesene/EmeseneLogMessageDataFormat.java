@@ -31,7 +31,7 @@ public class EmeseneLogMessageDataFormat  implements DataFormat {
 			throws Exception {
 		String ligne = exchange.getContext().getTypeConverter().mandatoryConvertTo(String.class, stream);
 		EmeseneLogMessage lm = parse(ligne);
-		logger.debug(lm);
+		logger.trace(lm);
 		return lm;
 	}
 	
